@@ -1,11 +1,11 @@
 import { connectDB } from "../config/db";
 import User from "../models/user.model";
-import {getCookie} from "../Cookies/appCookie";
+import {getAuthFromRequest} from "../Cookies/appCookie";
 
 //export const runtime = "experimental-edge";
 export async function GET(request) {
 
-  const token = getCookie(request);
+  const token = getAuthFromRequest(request);
   
   if (token) {
     try {

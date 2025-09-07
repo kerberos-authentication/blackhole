@@ -1,10 +1,10 @@
 
 import { connectDB } from "../config/db";
-import { deleteCookie } from "../Cookies/appCookie";
+import { clearAuthCookie } from "../Cookies/appCookie";
 export async function POST(request) {
   await connectDB();
   try {
-    deleteCookie(request);
+    clearAuthCookie();
    
     return Response.json(
       { message: "Logged out successfully." },
