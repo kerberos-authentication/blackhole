@@ -1,0 +1,75 @@
+{
+  "LocalSwitcher":{"ToggleLanguage":"Change language",
+  "English":"English",
+  "Persian":"Persian"
+  },
+  "Layout":{
+    "title":"Mahshid co"
+  },
+
+  "AppNavigation": {
+    "home": "Start",
+    "profile": "Profile"
+  },
+  "Navbar":{"Mahshid":"Mahshid Co",
+    "cooperation":"Cooperation",
+    "game":"Games>",
+    "events":"Events",
+    "Signin":"Sign in",
+    "alert":"Login to use website",
+    "Dashboard":"Dashboard",
+    "Statistics":"Statistics",
+    "Users":"Users",
+    "Games":"Games",
+    "Orders":"Orders",
+    "Billings":"Billings",
+    "Settings":"Settings",
+    "Help":"Help"
+  }  ,
+  "PublicNavigation": {
+    "about": "Navigagion",
+    "home": "Start"
+  },
+  "HeroContent": {
+   "Fullstack":"Fullstack",
+   "Under":"Under",
+   "Developing":"Developing Portfolio",
+    "Providing": "Providing",
+    "best":"the best",
+    "project":"project exprience",
+    "font":" ",
+    "Learn":"Learn More!"
+  },
+  "skillText":{"generation":"Think better with new generation of online tools"}
+  ,
+  "Encryption":{
+    "Performance":"Performance",
+    "Security":"Security",
+    "Encryption":"Encryption",
+     "description":"Secure your data with end-to-end encryption"
+  },
+  "Footer":{"language":"en",
+    "Community":"Community",
+    "Youtube":"Youtube",
+    "Github":"Github",
+    "Discord":"Discord",
+    "social":"Social Media",
+    "Instagram":"Instagram",
+    "Twitter":"Twitter",
+    "Linkedin":"Linkedin",
+    "About":"About",
+    "Sponsor":"Become Sponsor",
+    "Learning":"Learning about us"
+  },
+  "Projects":{
+    "ourProjects":"Our Projects",
+    "ModernNextPortfolio":"Modern NextJs Assistant-Consultant",
+    "Des4Modern":"With safe database and efficient census, survey and statistical analysis",
+    "InteractiveWebsiteCards":"Interactive Website Cards",
+    "Des4Interactive":"Decision-making and analysis with the help of artificial intelligence",
+    "SpaceThemed":"Space theme portal",
+    "Des4SpaceThemed":"ÙTo manage office, census, statistics and admissions"
+
+  }
+
+}

@@ -1,0 +1,187 @@
+//import finalhandler from 'finalhandler';   
+//   /finalhandler is a helper (often used with serve-static or custom middleware chains) to automatically handle unhandled requests or errors (e.g., 404s, internal errors).
+import path from 'path';
+import fs from 'fs';
+import http from 'http';
+import { AutoRouter, cors } from 'itty-router';  // Router library
+import { fileURLToPath } from 'url';
+import { createServer as createViteServer } from 'vite';
+import serveStatic from 'serve-static';  // Static file handling
+import bcrypt from 'bcrypt';  // For password hashing
+
+// Import custom helpers
+import { connectDB } from './api/config/db.js';
+import User from './api/models/user.model.js';
+import validateEmail from './api/helpers/validateEmail.js';
+import validatePassword from './api/helpers/validatePassword.js';
+import { setCookie } from './api/Cookies/appCookie.js';
+
+// Configuration Constants
+const HOST = 'localhost';
+const PORT = 8000;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const supportedLangs = ['en', 'fa'];  // Supported languages
+const redirectablePaths = new Set(['/', '/login', '/register', '/games']);  // Paths to handle
+
+// CORS configuration (allowing all origins)
+const { preflight, corsify } = cors({
+  origin: () => true,
+  credentials: true
+});
+
+// Language Detection Function
+const detectLang = (req) => {
+  const cookieLang = req.headers.cookie?.match(/lang=(\w{2})/)?.[1];
+  if (supportedLangs.includes(cookieLang)) return cookieLang;
+
+  const acceptLang = req.headers['accept-language'];
+  if (acceptLang) {
+    const detected = acceptLang.split(',').map(l => l.split(';')[0].trim());
+    const matched = detected.find(lang => supportedLangs.includes(lang));
+    if (matched) return matched;
+  }
+
+  return 'fa';  // Default to 'fa' (Farsi) if no language found
+};
+
+// Serve static files from 'public' folder
+const staticMiddleware = serveStatic(path.join(__dirname, '../public'), {
+  index: false,  // Don't auto-serve index.html
+  extensions: ['html', 'htm'],  // Handle HTML extensions
+  fallthrough: true,  // Allow router to handle missed static files 
+   // Allow other middleware to handle missed static files 
+   //fallthrough: true  : This allows static files to be served by serve-static while allowing the router to handle any non-static routes like /login, /register, etc.
+});
+console.log('Serving static files from:', path.join(__dirname, '../public'));
+
+// Router setup using itty-router
+export const router = AutoRouter();
+
+async function createServer() {
+  // Initialize Vite for SSR (Server-Side Rendering)
+  const vite = await createViteServer({
+    server: { middlewareMode: true },
+    appType: 'custom'
+  });
+
+  // Apply Vite middleware for SSR
+  router.all(vite.middlewares);
+
+  // Language redirection middleware (simplified)
+  router.all('*', (req, res, next) => {
+    if (!req.headers.accept?.includes('text/html')) return next();  // Skip non-HTML requests
+
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const pathParts = url.pathname.split('/').filter(Boolean);
+    const rawPath = '/' + (pathParts[0] || '');
+
+    if (!redirectablePaths.has(rawPath) && !(rawPath === '/games' && pathParts.length > 1)) {
+      return next();  // No redirection needed
+    }
+
+    // Detect the language from the request
+    const lang = detectLang(req);
+
+    // If the language is missing from the path, redirect to the correct language version
+    if (!supportedLangs.includes(pathParts[0])) {
+      const redirectTo = '/' + lang + url.pathname;
+      res.writeHead(302, { Location: redirectTo });
+      return res.end();
+    }
+
+    next();  // Proceed if no redirection is needed
+  });
+
+  // Static file handling and routing
+  http.createServer((req, res) => {
+    staticMiddleware(req, res, (err) => {
+      if (err) {
+        console.error('Error serving static file:', err);  // Log static file errors
+        return res.status(404).send('File not found');  // Respond with 404 if file is not found
+      }
+
+      // If not a static file, route the request
+      router.handle(req).then(async (resp) => {
+        res.writeHead(resp.status, resp.statusText, Object.fromEntries(resp.headers.entries()));
+        res.end(await resp.text());  // Send response body
+      }).catch((err) => {
+        console.error('Router error:', err);
+        res.status(500).send('Internal Server Error');  // Send 500 error if something goes wrong
+      });
+    });
+  }).listen(PORT, HOST, () => {
+    console.log(`✅ Server listening at http://${HOST}:${PORT}`);
+  });
+
+  // Language redirection for login page (simplified) //Enter login page
+  router.get("/login", (req, res) => {
+    const lang = detectLang(req);    // My language function
+    res.writeHead(302, { Location: `/${lang}/login` });  // Redirect to correct language-specific login page
+    res.end();
+  });
+
+  // User Registration Logic
+  router.post('/register', async (req, res) => {
+    await connectDB();  // Connect to the database
+    const body = await req.json();  // Parse JSON request body
+    const { username, email, password } = body;
+
+    if (!validateEmail(email) || !validatePassword(password)) {
+      return Response.json({ error: 'Invalid email or password!' }, { status: 400 });
+    }
+
+    try {
+      if (!email || !password || !username) throw new Error('All fields are required.');
+
+      const userExists = await User.findOne({ email });
+      if (userExists) return Response.json({ message: 'User already exists.' }, { status: 400 });
+
+      const hashedPassword = await bcrypt.hash(password, 10);  // Hash password
+      const user = await User.create({ username, email, password: hashedPassword });
+      setCookie(user._id);  // Set the user session cookie
+
+      return Response.json({
+        message: 'User created successfully.',
+        user: { ...user.toObject(), password: undefined }
+      }, { status: 201 });
+
+    } catch (err) {
+      return Response.json({ message: err.message }, { status: 400 });
+    }
+  });
+
+  // User Login Logic
+  router.post('/login', async (req, res) => {
+    console.log('Login page requested:', req.url);
+
+    await connectDB();  // Connect to the database
+    const { email, password } = await req.json();  // Parse the request body
+
+    try {
+      const user = await User.findOne({ email });
+      if (!user) return Response.json({ message: 'The user doesn\'t exist!' }, { status: 400 });
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);  // Check password
+      if (!isPasswordValid) return Response.json({ message: 'Wrong password.' }, { status: 400 });
+
+      setCookie(user._id);  // Set the user session cookie
+
+      return Response.json({
+        message: 'Logged in successfully.',
+        user: { ...user.toObject(), password: undefined }
+      }, { status: 200 });
+
+    } catch (err) {
+      return Response.json({ message: err.message }, { status: 400 });
+    }
+  });
+
+  // Catch-all route for unmatched routes (404 Not Found)
+  router.all('*', (req, res) => {
+    res.statusCode = 404;
+    res.end('💥 Route Not Found');
+  });
+}
+
+// Start the server
+createServer();

@@ -1,0 +1,107 @@
+{
+  "LocalSwitcher":{"ToggleLanguage":"Change language",
+  "English":"English",
+  "Persian":"Persian"
+  },
+  "Layout":{
+    "title":"Mahshid co"
+  },
+
+  "login": {
+    "login": "Log In",
+    "welcome": "Welcome back! Please enter your credentials.",
+    "email": "Email",
+    "password": "Password",
+    "emailPlace": "Enter your email",
+    "passwordPlace": "Enter your password",
+    "account": "Don't have an account?",
+    "signup": "Sign up here",
+    "loading": "Logging in...",
+    "requiredFields": "All fields are required.",
+    "invalidEmail": "Please enter a valid email address.",
+    "show": "Show",
+    "hide": "Hide"
+  },
+  "register": { "title":"Create an account for better experience",
+    "login": "Log in",
+    "username":"username",
+    "usernamePlace":"Enter a username",
+    "welcome": "Register now to access all features of App",
+    "email":"Email",
+    "emailPlace":"Enter your email address",
+    "password":"Password",
+    "passwordPlace":"Enter your password",
+    "account":"Already have an account?",
+    "signup":"Sign up",
+    "loading": "Signing up...",
+    "requiredFields": "All fields are required.",
+    "invalidEmail": "Please enter a valid email address.",
+    "show": "Show",
+    "hide": "Hide"
+  },
+  "Navbar":{"Mahshid":"Mahshid Co",
+  "Login":"Login to access more!",
+  "Guest":"Guest",
+    "cooperation":"Cooperation",
+    "game":"Games>",
+    "events":"Events",
+    "Signin":"Sign in",
+    "alert":"Login to use website",
+    "Dashboard":"Dashboard",
+    "Statistics":"Statistics",
+    "Users":"Users",
+    "Games":"Games",
+    "Orders":"Orders",
+    "Billings":"Billings",
+    "Settings":"Settings",
+    "Help":"Help"
+  }  ,
+  "PublicNavigation": {
+    "about": "Navigagion",
+    "home": "Start"
+  },
+  "HeroContent": {
+   "Fullstack":"Fullstack",
+   "Under":"Under",
+   "Developing":"Developing Portfolio",
+    "Providing": "Providing",
+    "best":"the best",
+    "project":"project exprience",
+    "font":" ",
+    "Learn":"Learn More!"
+  },
+  "skillText":{"generation":"Think better with new generation of online tools",
+"modern":"Making apps with modern technologies",
+"task":"Never miss a task, deadline or idea"}
+  ,
+  "Encryption":{
+    "Performance":"Performance",
+    "Security":"Security",
+    "Encryption":"Encryption",
+     "description":"Secure your data with end-to-end encryption"
+  },
+  "Footer":{"language":"en",
+    "Community":"Community",
+    "Youtube":"Youtube",
+    "Github":"Github",
+    "Discord":"Discord",
+    "social":"Social Media",
+    "Instagram":"Instagram",
+    "Twitter":"Twitter",
+    "Linkedin":"Linkedin",
+    "About":"About",
+    "Sponsor":"Become Sponsor",
+    "Learning":"Learning about us"
+  },
+  "Projects":{
+    "ourProjects":"Our Projects",
+    "ModernNextPortfolio":"Modern NextJs Assistant-Consultant",
+    "Des4Modern":"With safe database and efficient census, survey and statistical analysis",
+    "InteractiveWebsiteCards":"Interactive Website Cards",
+    "Des4Interactive":"Decision-making and analysis with the help of artificial intelligence",
+    "SpaceThemed":"Space theme portal",
+    "Des4SpaceThemed":"ÙTo manage office, census, statistics and admissions"
+
+  }
+
+}

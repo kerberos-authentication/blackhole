@@ -1,0 +1,79 @@
+// -----------------------------
+// server/api/helpers/auth.js
+// -----------------------------
+import {jsonResponse} from './jsonResponse.js'
+import bcrypt from 'bcrypt';             // Password hashing
+import { connectDB } from '../config/db.js';
+import User from '../models/user.model.js';
+import validateEmail from './validateEmail.js';
+import validatePassword from './validatePassword.js';
+import { setCookie } from '../Cookies/appCookie.js';
+
+// -----------------------------
+// REGISTER HANDLER
+// -----------------------------
+export async function registerHandler(req) {
+  await connectDB();
+  const { username, email, password } = await req.json();
+
+  if (!validateEmail(email) || !validatePassword(password)) {
+    return jsonResponse({ error: 'Invalid email or password!' }, 400 );
+  }
+
+  try {
+    if (!email || !password || !username) {
+      throw new Error('All fields required');
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return jsonResponse({ message: 'User already exists' }, 400 );
+      // ({ message: 'User already exists' }, { status: 400 });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ username, email, password: hashedPassword });
+
+    // Set authentication cookie
+    setCookie(user._id);
+
+    return jsonResponse({
+      message: 'User created successfully',
+      user: { ...user.toObject(), password: undefined }
+    }, { status: 201 });
+
+  } catch (err) {
+    return jsonResponse({ message: err.message }, 400 );
+  }
+}
+
+// -----------------------------
+// LOGIN HANDLER
+// -----------------------------
+export async function loginHandler(req) {
+  await connectDB();
+  const { email, password } = await req.json();
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return jsonResponse({ message: 'User not found' },  400 );
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return jsonResponse({ message: 'Wrong password' }, 400 );
+    }
+
+    // Set authentication cookie
+    setCookie(user._id);
+
+    return jsonResponse({
+      message: 'Login successful',
+      user: { ...user.toObject(), password: undefined }
+    }, 200 );
+
+  } catch (err) {
+    return jsonResponse({ message: err.message }, 400 );
+  }
+}

@@ -1,0 +1,121 @@
+    <Routes>
+          {routes.map(({ path, Component }, i) => (
+            <Route
+              key={i}
+              path={path}
+              element={
+                <Layout>
+                  <Navbar />
+                  <StarsCanvas />
+                  <Component />
+                </Layout>
+              }
+            />
+          ))}
+          <Route path="*" element={<NotFound />} />
+    </Routes>
+
+
+
+/*
+ // src/entry-client.jsx
+import { hydrateRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from 'react-router';
+import React, { Suspense, lazy } from 'react';
+import "./index.css";
+
+import Navbar from './components/Navbar/page.jsx';
+import StarsCanvas from './components/main/StarBackground.jsx';
+import NotFound from './app/NotFound.jsx';
+
+// Layout (shared across pages)
+const Layout = lazy(() => import('./app/Layout.jsx'));
+
+// Static registry of routes -> lazy-loaded page components
+const routeComponents = {
+  home: lazy(() => import('./app/home/page.jsx')),
+  about: lazy(() => import('./app/about/page.jsx')),
+  // Add more pages here as needed
+};
+
+// Page wrapper for consistent layout
+function PageWrapper({ Page }) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Layout>
+        <Navbar />
+        <StarsCanvas />
+        <Page />
+      </Layout>
+    </Suspense>
+  );
+}
+
+// All valid routes, mapped from keys in the routeComponents object
+const routes = Object.entries(routeComponents).map(([path, Page]) => (
+   <Route key={path} path={`/${path === 'home' ? '' : path}`} element={<PageWrapper Page={Page} />} />   ));
+
+hydrateRoot(
+  document.getElementById("root"),
+  <BrowserRouter>
+    <Routes>
+      {routes}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </BrowserRouter>
+);
+ */
+
+
+
+
+
+/* 
+import Navbar from './components/Navbar/page.jsx';
+import StarsCanvas from './components/main/StarBackground.jsx';
+import NotFound from './app/NotFound.jsx';
+
+// Layout
+const Layout = lazy(() => import('./app/Layout.jsx'));
+
+// 1. Glob all page components under `./app/**/page.jsx`
+const pages = import.meta.glob('./app/**/page.jsx');
+
+// 2. Transform into route map
+const routes = Object.entries(pages).map(([path, componentImporter]) => {
+  // Extract route path from file path
+  const routePath = path
+    .replace('./app/', '')      // remove base dir
+    .replace('/page.jsx', '')   // remove file name
+    .replace('index', '')       // optional: treat index.jsx as root
+    .toLowerCase();
+
+  const Component = lazy(componentImporter);
+
+  return {
+    path: `/${routePath}`, // "" becomes "/", "about" stays "/about"
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Layout>
+          <Navbar />
+          <StarsCanvas />
+          <Component />
+        </Layout>
+      </Suspense>
+    )
+  };
+});
+hydrateRoot(
+  document.getElementById("root"),
+  <BrowserRouter>
+    <Routes>
+      {routes.map(({ path, element }, i) => (
+        <Route key={i} path={path} element={element} />
+      ))}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </BrowserRouter>
+); 
+*/
+
+

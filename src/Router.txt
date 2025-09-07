@@ -1,0 +1,30 @@
+// Auto-load all route components using Vite's import.meta.glob
+//const pageModules = import.meta.glob('./app/**/page.jsx');
+// Imported!!
+// Build route list dynamically
+  /* const routePath = filePath
+    .replace('./app/', '')
+    .replace('/page.jsx', '')
+    .replace(/index$/, '')
+    .toLowerCase(); */
+
+// const routes = Object.entries(pageModules).map(([filePath, importer]) => {
+// const match = filePath.match(/\.\/app\/([^/]+)\/page\.jsx$/);
+// if (!match) return null;
+// const folderName = match[1].toLowerCase();    // match[1] gives you the folder name like Home, About, Login
+//  const path = folderName === 'home' ? '/' : `/${folderName}`;
+//   const Component = lazy(importer);
+//   return {
+//     path,
+//     element: (
+//       <Suspense fallback={<Spinner />}>
+//         <Layout>
+       
+//           <Component />
+//         </Layout>
+//       </Suspense>
+//     ),
+//   };
+// }).filter(Boolean); // remove any nulls;
+// console.log('Generated routes:', routes);
+//console.log('Registered routes:', routes.map((r) => r.path));

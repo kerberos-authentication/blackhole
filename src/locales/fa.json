@@ -1,0 +1,106 @@
+
+ {
+      "LocalSwitcher":{"ToggleLanguage":"تغییر زبان",
+    "English":"English",
+    "Persian":"پارسی"
+    },
+    "Layout":{
+    "title":"گروه مهشید"
+  },
+    "AppNavigation": {
+      "home": "Start",
+      "profile": "پروفایل"
+    },
+    "login": {
+    "login": "ورود",
+    "welcome": "خوش آمدی! برای دسترسی بیشتر! وارد شوید",
+    "email":"ایمیل",
+    "emailPlace":"ایمیل را وارد کنید",
+    "password":"پسورد",
+    "passwordPlace":"پسورد را وارد کنید",
+    "account":"حساب کاربری ندارید؟",
+    "signup":"نام نویسی کنید",
+    "loading": "بارگذاری...",
+    "requiredFields": "موردی را خالی نگذارید",
+    "invalidEmail": "ایمیل درست وارد نشده",
+    "show": "نمایش",
+    "hide": "پنهان شو"
+  },  
+  "register": {
+    "title":"تجربه بهتر با ساخت حساب کاربری!",
+     "login": "وارد شوید",
+    "welcome": "خوش آمدی! یک حساب کاربری بساز",
+    "username":"نام کاربر",
+    "usernamePlace":"نام کاربر را وارد کنید",
+    "email":"ایمیل",
+    "emailPlace":"ایمیل را وارد کنید",
+    "password":"پسورد",
+    "passwordPlace":"پسورد را وارد کنید",
+    "account":"حساب کاربری دارید؟",
+    "signup":"نام نویسی",
+    "loading": "بارگذاری...",
+    "requiredFields": "موردی را خالی نگذارید",
+    "invalidEmail": "ایمیل درست وارد نشده",
+    "show": "نمایش",
+    "hide": "پنهان شو"
+  },
+    "Navbar":{
+             "Mahshid":"گروه مهشید",
+             "Login":"ورود به سایت",
+             "Guest":"مهمان",
+             "cooperation":"همکاری",
+             "game":"سرگرمی",
+             "events":"رویدادها",
+             "Signin":"ورود/ثبت نام",
+             "alert":"باید در سایت نام نویسی یا ورود کنید",
+             "Dashboard":"داشبورد",
+             "Statistics":"آمار",
+             "Users":"کاربران",
+            "Games":"بازی",
+            "Orders":"سفارش",
+            "Billings":"حسابرسی",
+            "Settings":"تنظیم",
+            "Help":"راهنما"
+    },
+    "HeroContent": {
+      "Fullstack":"این سایت",
+      "Under":"هنوز در حال",
+      "Developing":"توسعه هست",
+      "Providing": "با ",
+      "best":"به روزترین",
+      "project":"ابزارها دیده شوید",
+      "font":"geistMono",
+      "Learn":"بیشتر بدانید"
+    },
+    "skillText":{"generation":"آسودگی بیشتر در کسب و کار با ابزارهای آنلاین", "modern":"ساخت سایت یا اپلیکسشن با تکنولوژی های مدرن",
+  "task":"هیچ ایده یا فکر هوشمندانه ای را دستکم نگیرید"}
+    ,
+    "Encryption":{
+      "Performance":"کارایی،بازده",
+      "Security":"امنیت",
+      "Encryption":"رمزنگاری",
+      "description":"با کارایی و امنیت درست کسب و کارتان را بهبود دهید"
+    },
+    "Footer":{"language":"fa",
+      "Community":"پروژه های گروه",
+      "Youtube":"یوتیوب",
+      "Github":"گیتاب",
+      "Discord":"Discord",
+      "social":"گردهمایی های دوستانه",
+      "Instagram":"اینستاگرام",
+      "Twitter":"توییتر",
+      "Linkedin":"لینکدین",
+      "About":"درباره گروه",
+      "Sponsor":"سرمایه گذاری",
+      "Learning":"بیشتر بدانید"
+    },
+    "Projects":{
+      "ourProjects":"تازه ترین کارها",
+      "ModernNextPortfolio":"مشاور بازار",
+      "Des4Modern":" با پایگاه داده امن، سرشماری و پشتیابنی از چند زبان",
+      "InteractiveWebsiteCards":"سیستم تصمیم گیری هوشمند",
+    "Des4Interactive":"تصمیم گیری با هوش مصنوعی",
+    "SpaceThemed":"پرتال گروه",
+    "Des4SpaceThemed":"دفترکار،سرشماری،آمار و پذیرش"
+    }
+}

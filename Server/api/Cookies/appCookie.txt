@@ -1,0 +1,45 @@
+import * as cookie from 'cookie';
+
+import url from 'url';
+
+export const setCookie = async (req) => {
+
+  //cookie.serialize(name, token);
+  let query = url.parse(req.url, true, true).query;
+  if (query && query.name) {
+    const res = new Response(req.body);
+    // Set a new cookie with the name
+    res.setHeader(
+      "Set-Cookie",
+      cookie.serialize("name", String(query.name), {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+      }),
+    );
+
+    // Redirect back after setting cookie
+    // res.statusCode = 302;
+    // res.setHeader("Location", req.headers.referer || "/");
+    // res.end();
+    // return;
+  }
+}
+
+export const getCookie = async (req) => {
+  let cookies = cookie.parse(req.headers.cookie || "");
+  return cookies.name || null;
+
+  //Wrong
+  /*  if (cookies.name) {
+    return value;
+  }   */
+};
+
+
+
+export const deleteCookie = async (req) => {
+  let cookies = cookie.parse(req.headers.cookie || "");
+  if (cookies.name) {
+    cookies.deleteCookie(cookies.name);
+  }
+}

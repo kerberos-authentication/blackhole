@@ -1,0 +1,173 @@
+// -----------------------------
+// /server/index.js
+// -----------------------------
+// Import auth helpers
+import { registerHandler, loginHandler } from './api/helpers/auth.js';
+// Core Node modules
+import http from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// External libraries
+import { AutoRouter, cors, withParams } from 'itty-router';  // Router
+import serveStatic from 'serve-static';  // Serve public assets
+import { createServer as createViteServer } from 'vite'; // Vite for SSR
+
+// Helpers 
+// import {jsonResponse} from './api/helpers/jsonResponse.js'
+
+// -----------------------------
+// CONFIGURATION
+// -----------------------------
+const HOST = 'localhost';
+const PORT = 8000;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Languages
+const supportedLangs = ['en', 'fa'];  // English + Persian
+const redirectablePaths = new Set(['/', '/login', '/register', '/games']); // Routes needing lang prefix
+
+// -----------------------------
+// CORS Middleware
+// -----------------------------
+const { preflight, corsify } = cors({
+  origin: () => true,   // Allow all origins
+  credentials: true     // Allow cookies
+});
+
+// -----------------------------
+// LANGUAGE DETECTION HELPER
+// -----------------------------
+function detectLang(req) {
+  // 1. Try cookie
+  const cookieLang = req.headers.cookie?.match(/lang=(\w{2})/)?.[1];
+  if (supportedLangs.includes(cookieLang)) return cookieLang;
+
+  // 2. Try Accept-Language header
+  const acceptLang = req.headers['accept-language'];
+  if (acceptLang) {
+    const detected = acceptLang.split(',').map(l => l.split(';')[0].trim());
+    const matched = detected.find(lang => supportedLangs.includes(lang));
+    if (matched) return matched;
+  }
+
+  // 3. Fallback
+  return 'fa';
+}
+
+// -----------------------------
+// STATIC FILES (from /public)
+// -----------------------------
+const staticMiddleware = serveStatic(path.join(__dirname, '../public'), {
+  index: false,
+  fallthrough: true
+});
+
+// -----------------------------
+// ROUTER SETUP
+// -----------------------------
+const router = AutoRouter({ base: '/' });
+
+// -----------------------------
+// MIDDLEWARE: enforce language prefix
+// -----------------------------
+router.all('*', (req, env, ctx) => {
+  const url = new URL(req.url);
+
+  // Skip non-HTML requests (static assets, APIs, etc.)
+  if (!req.headers.accept?.includes('text/html')) return;
+
+  const pathParts = url.pathname.split('/').filter(Boolean); // → ['en','login']
+  const rawPath = '/' + (pathParts[0] || ''); // first segment or root
+
+  // Only handle redirectable paths
+  if (!redirectablePaths.has(rawPath) && !(rawPath === '/games' && pathParts.length > 1)) {
+    return;
+  }
+
+  // Detect language
+  const lang = detectLang(req);
+
+  // If missing lang prefix → redirect
+  if (!supportedLangs.includes(pathParts[0])) {
+    const redirectTo = '/' + lang + url.pathname;
+    return new Response(null, {
+      status: 302,
+      headers: { Location: redirectTo }
+    });
+  }
+});
+
+// -----------------------------
+// AUTH HELPERS (LOGIN / REGISTER)
+// -----------------------------
+
+// REGISTER
+router.post('/register', registerHandler);
+
+// LOGIN
+router.post('/login', loginHandler);
+// -----------------------------
+// FALLBACK: 404
+// -----------------------------
+router.all('*', () => new Response('💥 Not Found', { status: 404 }));
+
+// -----------------------------
+// CREATE SERVER
+// -----------------------------
+async function createServer() {
+  // Setup vite for SSR
+  const vite = await createViteServer({
+    server: { middlewareMode: true },
+    appType: 'custom'
+  });
+
+  // HTTP server
+  http.createServer((req, res) => {
+    // 1. Try static assets first
+    staticMiddleware(req, res, async () => {
+      try {
+                                                  // 2. Router handles request
+                                                    //   const resp = await router.handle(req);
+                                                    //   if (resp) {
+                                                    //     res.writeHead(resp.status, Object.fromEntries(resp.headers));
+                                                    //     res.end(await resp.text());
+                                                    //   } else {
+                                                    //     res.writeHead(404);
+                                                    //     res.end('💥 Not Found');
+                                                    //   }
+                                                    // } catch (err) {
+                                                    //   console.error('Router error:', err);
+                                                    //   res.writeHead(500);
+                                                    //   res.end('Internal Server Error');
+                                                    // }
+ //2. ✅ Convert Node req into Fetch API Request before passing to itty-router
+const fetchReq = new Request(new URL(req.url, `http://${req.headers.host}`), {
+  method: req.method,
+  headers: req.headers,
+  body: req.method !== 'GET' && req.method !== 'HEAD' ? req : undefined,
+   duplex: "half",   // 👈 Required in Node fetch
+});
+
+router.handle(fetchReq).then(async (resp) => {
+  if (!resp) {
+    res.writeHead(404);
+    return res.end('💥 Not Found!');
+  }
+  res.writeHead(resp.status, resp.statusText, Object.fromEntries(resp.headers.entries()));
+  res.end(await resp.text());
+});
+
+          }
+           catch (err) {
+                     console.error('Router error:', err);
+                        res.writeHead(500);
+                             res.end('Internal Server Error');
+                           }
+        });
+  }).listen(PORT, HOST, () => {
+    console.log(`✅ Server running at http://${HOST}:${PORT}`);
+  });
+}
+
+createServer();
