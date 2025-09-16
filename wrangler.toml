@@ -1,0 +1,16 @@
+name = "vite-react-worker"
+main = "Server/index.js"          # Point to your worker entry-point here
+compatibility_date = "2024-09-07"
+
+
+[build.upload]
+format = "service-worker"
+dir = "./dist"
+
+#[site]
+#bucket = "./dist"    # your built React app
+                     #This tells Cloudflare Workers:
+                     #  1. Use Server/index.js as the entrypoint.
+                     #  2. Serve static assets from dist/.
+
+ #entry-point = "index.js"  # Your worker entry point. - Don't define both the `main` and `site.entry-point` fields in your configuration.

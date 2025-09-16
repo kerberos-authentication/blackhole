@@ -1,9 +1,10 @@
+//Server/api/config/db.js
 import mongoose from "mongoose";
-import dotenv from 'dotenv';//import.meta.env is typically used in Vite's frontend code, and it doesn’t directly
+//import dotenv from 'dotenv';//import.meta.env is typically used in Vite's frontend code, and it doesn’t directly
 //  work in Node.js (backend) code
 
 dotenv.config();  // Load environment variables from .env file
-
+ 
 export const connectDB = async (retries = 8, delay = 5000) => {  // Retry 5 times, 5 seconds delay
     try {
         const conn = await mongoose.connect(process.env.VITE_DATABASE_URL);

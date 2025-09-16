@@ -1,12 +1,7 @@
 // /Server/api/helpers/auth.js
 // ---------------------------------------------------------------------------
-// itty-router-ready handlers for Register / Login.
-// - They RETURN Response objects (using jsonResponse helper).
-// - They connect DB, validate payload, and set auth cookie.
-// - No "fetch to self" anywhere.
-// ---------------------------------------------------------------------------
 
-import bcrypt from 'bcrypt';
+import {webCryptoHashPassword, webCryptoComparePassword} from './webCryptoAPI.js';
 import { jsonResponse } from './jsonResponse.js';
 import { connectDB } from '../config/db.js';
 import User from '../models/user.model.js';
@@ -40,7 +35,8 @@ export async function registerHandler(req) {   console.log('➡️Registeration 
     }
 
     // Hash & insert
-    const hashed = await bcrypt.hash(password, 10);
+    //const hashed = await bcrypt.hash(password, 10);
+    const hashed = await webCryptoHashPassword(password);
     const user = await User.create({ username, email, password: hashed });
 
     // Create auth cookie (simple userId for demo)
@@ -77,7 +73,9 @@ export async function loginHandler(req) {
     }
 
     // Compare password
-    const ok = await bcrypt.compare(password, user.password);
+    //const ok = await bcrypt.compare(password, user.password);
+    const ok = await webCryptoComparePassword(password, user.password);
+
     if (!ok) {
       return jsonResponse({ message: 'Wrong password🔥.' }, 400);
     }
