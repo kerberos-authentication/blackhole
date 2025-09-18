@@ -1,12 +1,20 @@
 // /functions/index.js
+// -----------------------------
+// CLOUDLFARE WORKER ENTRY
+// -----------------------------
 import { AutoRouter, cors } from 'itty-router';
-import { jsonResponse } from './helpers/jsonResponse.js';
+import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
+
+// -----------------------------
+// LOCAL HELPERS
+// -----------------------------
 import { registerHandler, loginHandler } from './helpers/auth.js';
+import { jsonResponse } from './helpers/jsonResponse.js';
 import { detectLang, maybeRedirectToLang } from './helpers/lang.js';
 import { maybeAuthRedirect, redirectIfAuthedTryingToLogin } from './Cookies/appCookie.js';
 
 // -----------------------------
-// CORS setup
+// CORS CONFIG
 // -----------------------------
 const { preflight, corsify } = cors({
   origin: true,
@@ -14,12 +22,15 @@ const { preflight, corsify } = cors({
 });
 
 // -----------------------------
-// Router setup
+// ROUTER SETUP
 // -----------------------------
-const router = AutoRouter({ base: '/', finally: [corsify] });
+const router = AutoRouter({
+  base: '/',
+  finally: [corsify], // always attach CORS headers
+});
 
 // -----------------------------
-// OPTIONS preflight
+// OPTIONS (CORS Preflight)
 // -----------------------------
 router.options('*', preflight);
 
@@ -43,63 +54,47 @@ router.all('*', (req) => {
 });
 
 // -----------------------------
-// API Routes
+// API ROUTES
 // -----------------------------
 router.post('/register', (req, env) => registerHandler(req, env));
 router.post('/login', (req, env) => loginHandler(req, env));
-router.get('/json', () => jsonResponse({ status: 'ok' }));
+
+// Example test JSON
+router.get('/json', () => jsonResponse({ status: 'ok⏪' }, 200));
 
 // -----------------------------
-// SPA / Static Assets
+// SPA ROUTES / STATIC ASSETS
 // -----------------------------
-const spaPaths = ['/', '/login', '/register', '/games', '/dashboard'];
+router.all('*', async (req, env, ctx) => {
+  try {
+    // Serve static assets automatically
+    return await getAssetFromKV({ request: req }, { env, ctx });
+  } catch {
+    // If not a static asset, fallback to index.html for SPA routes
+    try {
+      return await getAssetFromKV(
+        { request: new Request(`${new URL(req.url).origin}/index.html`, req) },
+        { env, ctx }
+      );
+    } catch {
+      return new Response('💥 Not Found', { status: 404 });
+    }
+  }
+});
 
 // -----------------------------
-// Cloudflare Pages Function
+// EXPORT WORKER
 // -----------------------------
 export async function onRequest(context) {
-  const { request, env, executionCtx } = context;
-  const url = new URL(request.url);
-  const pathname = url.pathname;
-
-  // -----------------------------
-  // API routes first
-  // -----------------------------
-  const apiRoutes = ['/register', '/login', '/json'];
-  if (apiRoutes.some((base) => pathname === base)) {
-    try {
-      return await router.fetch(request, env, executionCtx);
-    } catch (err) {
-      return jsonResponse({ error: 'API request failed', details: err.message }, 500);
-    }
-  }
-
-  // -----------------------------
-  // SPA routes
-  // -----------------------------
-  const isSpaRoute = spaPaths.some(
-    (base) => pathname === base || pathname.startsWith(base + '/')
-  );
-
-  if (isSpaRoute || pathname.includes('.')) {
-    // Serve static assets automatically:
-    // - JS, CSS, images, fonts, etc. are served from /dist
-    try {
-      // Cloudflare Pages automatically serves files in the "publish" folder.
-      // If the request matches a file, it will be served; otherwise, fallback to index.html
-      return await fetch(new Request(request.url));
-    } catch (err) {
-      return jsonResponse({ error: 'Static file not found', details: err.message }, 404);
-    }
-  }
-
-  // -----------------------------
-  // Fallback: SPA index.html for client-side routing
-  // -----------------------------
   try {
-    return await fetch(new Request(`${url.origin}/index.html`, request));
+    return await router.fetch(context.request, context.env, context.executionCtx);
   } catch (err) {
-    return jsonResponse({ error: 'index.html not found', details: err.message }, 500);
+    // fallback to index.html / static assets
+    try {
+      return await getAssetFromKV({ request: context.request }, { env: context.env, ctx: context.executionCtx });
+    } catch {
+      return new Response('💥 Not Found', { status: 404 });
+    }
   }
 }
 
