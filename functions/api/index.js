@@ -109,18 +109,38 @@ router.all('*', async (req, env, ctx) => {
 // -----------------------------
 // EXPORT WORKER HANDLER
 // -----------------------------
-export default {
-  async fetch(request, env, ctx) {
+//export default {
+//  async fetch(request, env, ctx) {
+/* export async function onRequest(context) {   // context has { request, env, params, executionCtx }
     try {
       // Try router first
-      return await router.fetch(request, env, ctx);
+      return await router.fetch(context.request, context.env, context.executionCtx);
     } catch (err) {
       // Fallback to asset handler
       try {
-        return await getAssetFromKV({ request }, { env, ctx });
+        return await getAssetFromKV({ context.request }, { context.env, context.executionCtx });
       } catch {
         return new Response('💥 Not Found', { status: 404 });
       }
     }
-  },
-};
+  //},
+}; */
+// /functions/index.js
+export async function onRequest(context) {
+  // context has { request, env, params, executionCtx }
+  try {
+    // Try router first
+    return await router.fetch(context.request, context.env, context.executionCtx);
+  } catch (err) {
+    // Fallback to asset handler
+    try {
+      return await getAssetFromKV(
+        { request: context.request },
+        { env: context.env, ctx: context.executionCtx }
+      );
+    } catch {
+      return new Response('💥 Not Found', { status: 404 });
+    }
+  }
+}
+
