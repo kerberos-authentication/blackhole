@@ -1,4 +1,4 @@
-// /Server/api/Cookies/appCookie.js
+// /functions/api/Cookies/appCookie.js
 // ---------------------------------------------------------------------------
 // Cookie helpers for auth gate + UX:
 // - setAuthCookie: returns headers to set an httpOnly session cookie
@@ -9,7 +9,7 @@
 // IMPORTANT: You can swap the cookie value for a signed JWT or session-id.
 // For demo: we store a simple userId (do not do this in production).
 // ---------------------------------------------------------------------------
-// /Server/api/Cookies/appCookie.js
+
 const COOKIE_NAME = 'sid';          // session cookie name
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 

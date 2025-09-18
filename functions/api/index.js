@@ -1,4 +1,4 @@
-// /Server/index.js
+// /functions/index.js
 // -----------------------------
 // CLOUDLFARE WORKER ENTRY
 // -----------------------------
@@ -8,16 +8,16 @@ import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
 // -----------------------------
 // LOCAL HELPERS (do not lose!)
 // -----------------------------
-import { registerHandler, loginHandler } from './api/helpers/auth.js';
-import { jsonResponse } from './api/helpers/jsonResponse.js';
+import { registerHandler, loginHandler } from './helpers/auth.js';
+import { jsonResponse } from './helpers/jsonResponse.js';
 import {
   detectLang,
   maybeRedirectToLang,
-} from './api/helpers/lang.js';
+} from './helpers/lang.js';
 import {
   maybeAuthRedirect,
   redirectIfAuthedTryingToLogin,
-} from './api/Cookies/appCookie.js';
+} from './Cookies/appCookie.js';
 
 // -----------------------------
 // CORS CONFIG
@@ -62,8 +62,9 @@ router.all('*', (req) => {
 // -----------------------------
 // API ROUTES
 // -----------------------------
-router.post('/register', registerHandler);
-router.post('/login', loginHandler);
+router.post('/register', (req, env) => registerHandler(req, env));
+router.post('/login', (req, env) => loginHandler(req, env));
+
 
 // Example test JSON
 router.get('/json', () => jsonResponse({ status: '0k⏪' }, 200));

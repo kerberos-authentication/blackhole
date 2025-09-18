@@ -1,11 +1,14 @@
 name = "vite-react-worker"
-main = "Server/index.js"          # Point to your worker entry-point here
+main = "Server/index.js"
 compatibility_date = "2024-09-07"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "ittyvite"
+database_id = "d94879ca-7319-421f-82c4-1e13cad5e649"
 
-[build.upload]
-format = "service-worker"
-dir = "./dist"
+# If you want to deploy static assets (React dist/), use this instead of build.upload
+# The [build.upload] section is deprecated.
 
 #[site]
 #bucket = "./dist"    # your built React app

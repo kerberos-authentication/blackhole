@@ -1,8 +1,6 @@
-// /server/api/helpers/jsonResponse.js
+// /functions/api/helpers/jsonResponse.js
 // itty-router expects every route handler to return a `Response` object
 // so let's create a helper to easily send JSON responses.
-
-// /Server/api/helpers/jsonResponse.js
 // ---------------------------------------------------------------------------
 // itty-router handlers must RETURN a Web Response object.
 // This helper makes returning JSON ergonomic and consistent.

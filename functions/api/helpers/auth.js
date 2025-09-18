@@ -1,18 +1,18 @@
-// /Server/api/helpers/auth.js
+// /functions/api/helpers/auth.js
 // ---------------------------------------------------------------------------
 
 import {webCryptoHashPassword, webCryptoComparePassword} from './webCryptoAPI.js';
 import { jsonResponse } from './jsonResponse.js';
 import { connectDB } from '../config/db.js';
-import User from '../models/user.model.js';
+import {findUserByEmail, createUser} from '../models/user.model.js';
 import validateEmail from './validateEmail.js';
 import validatePassword from './validatePassword.js';
 import { setAuthCookie } from '../Cookies/appCookie.js';
-
+  
 // -----------------------------
 // REGISTER (POST /register)
 // -----------------------------
-export async function registerHandler(req) {   console.log('➡️Registeration is running ... ');
+export async function registerHandler(req , env) {   console.log('➡️Registeration is running ... ');
   await connectDB();                         // ensure DB is ready
   const { username, email, password } = await req.json(); // parse JSON body
 
@@ -29,7 +29,7 @@ export async function registerHandler(req) {   console.log('➡️Registeration 
 
   try {
     // Check duplicate email
-    const exists = await User.findOne({ email });
+    const exists = await findUserByEmail(env, email);
     if (exists) {
       return jsonResponse({ message: 'User already exists.' }, 400);
     }
@@ -37,7 +37,7 @@ export async function registerHandler(req) {   console.log('➡️Registeration 
     // Hash & insert
     //const hashed = await bcrypt.hash(password, 10);
     const hashed = await webCryptoHashPassword(password);
-    const user = await User.create({ username, email, password: hashed });
+    const user = await createUser(env, { username, email, password: hashed });
 
     // Create auth cookie (simple userId for demo)
     const cookieHeaders = setAuthCookie(user._id.toString());
@@ -57,7 +57,7 @@ export async function registerHandler(req) {   console.log('➡️Registeration 
 // -----------------------------
 // LOGIN (POST /login)
 // -----------------------------
-export async function loginHandler(req) {
+export async function loginHandler(req , env) {
   await connectDB();                          // ensure DB is ready
   const { email, password } = await req.json(); // parse JSON payload
 
@@ -67,7 +67,7 @@ export async function loginHandler(req) {
 
   try {
     // Lookup user
-    const user = await User.findOne({ email });
+    const user = await findUserByEmail(env, email);
     if (!user) {
       return jsonResponse({ message: 'User not found.' }, 400);
     }

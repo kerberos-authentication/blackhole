@@ -1,4 +1,4 @@
-// /Server/api/helpers/lang.js
+// /functions/api/helpers/lang.js
 // ---------------------------------------------------------------------------
 // Language detection + redirection helpers.
 // - supportedLangs: languages we allow in the URL prefix.
