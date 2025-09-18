@@ -1,5 +1,5 @@
-name = "vite-react-worker"
-main = "functions/index.js"
+name = "vite-react-worker"   #main = "functions/index.js"
+
 compatibility_date = "2024-09-07"
 
 [[d1_databases]]
