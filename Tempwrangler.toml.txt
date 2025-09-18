@@ -1,0 +1,85 @@
+name = "vite-react-worker"   #main = "functions/index.js"
+
+compatibility_date = "2024-09-07"
+
+[build]
+command = "npm run build"
+publish = "dist"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ittyvite"
+database_id = "d94879ca-7319-421f-82c4-1e13cad5e649"
+
+# If you want to deploy static assets (React dist/), use this instead of build.upload
+# The [build.upload] section is deprecated.
+
+
+#[site]
+#bucket = "./dist"    # your built React app
+                     #This tells Cloudflare Workers:
+                     #  1. Use Server/index.js as the entrypoint.
+                     #  2. Serve static assets from dist/.
+
+ #entry-point = "index.js"  # Your worker entry point. - Don't define both the `main` and `site.entry-point` fields in your configuration.
+
+ Ah — now I see exactly what’s happening. The warning in Cloudflare Pages is because your wrangler.toml is being interpreted as a Pages configuration, but it’s actually a Workers Functions + Pages hybrid setup. Pages expects either:
+
+pages_build_output_dir for static-only sites
+
+Or functions + publish folder for a Worker-backed Pages site
+
+Currently, your file mixes things in a way that Pages is warning about:
+
+[build]
+command = "npm run build"
+publish = "dist"
+pages_build_output_dir = "dist"
+
+
+Here’s why the warning occurs:
+
+pages_build_output_dir is only for static Pages sites.
+
+You also have functions in your repo (/functions) which is for Workers Functions.
+
+Cloudflare sees both, gets confused, and warns that the wrangler.toml “does not appear to be valid.”
+
+How to fix:
+
+Since you’re using Workers Functions + SPA static assets, the correct wrangler.toml should look like this:
+
+name = "vite-react-worker"
+compatibility_date = "2024-09-07"
+
+[build]
+command = "npm run build"
+# Publish is for Pages to serve static assets (dist folder)
+publish = "dist"
+
+# Specify functions directory for Worker backend
+[functions]
+directory = "functions"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ittyvite"
+database_id = "d94879ca-7319-421f-82c4-1e13cad5e649"
+
+
+Key points:
+
+Remove pages_build_output_dir — that’s only for pure Pages (no Functions).
+
+Add [functions] directory = "functions" so Pages knows where your Worker code is.
+
+Keep publish = "dist" to serve your SPA static assets.
+
+With this configuration:
+
+/functions/index.js will act as the Worker backend for your API + SPA fallback.
+
+dist/ will be served automatically for static assets like JS, CSS, images.
+
+Cloudflare Pages won’t throw the “wrangler.toml does not appear valid” warning anymore.

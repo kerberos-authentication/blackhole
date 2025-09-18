@@ -1,24 +1,16 @@
-name = "vite-react-worker"   #main = "functions/index.js"
-
+name = "vite-react-worker"
 compatibility_date = "2024-09-07"
 
 [build]
 command = "npm run build"
+# Publish is for Pages to serve static assets (dist folder)
 publish = "dist"
-pages_build_output_dir = "dist"
+
+# Specify functions directory for Worker backend
+[functions]
+directory = "functions"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "ittyvite"
 database_id = "d94879ca-7319-421f-82c4-1e13cad5e649"
-
-# If you want to deploy static assets (React dist/), use this instead of build.upload
-# The [build.upload] section is deprecated.
-
-#[site]
-#bucket = "./dist"    # your built React app
-                     #This tells Cloudflare Workers:
-                     #  1. Use Server/index.js as the entrypoint.
-                     #  2. Serve static assets from dist/.
-
- #entry-point = "index.js"  # Your worker entry point. - Don't define both the `main` and `site.entry-point` fields in your configuration.
