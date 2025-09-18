@@ -9,9 +9,9 @@ import { pageModules } from './routes.js'; // <- your Vite glob
 
 import i18n from './components/utils/i18n';  // 👈 server-safe (no LanguageDetector)// Must be same instance used in app
 
-import { getAuthFromRequest } from '../Server/api/Cookies/appCookie.js';
-import User from '../Server/api/models/user.model.js';
-import { connectDB } from '../Server/api/config/db.js';
+import { getAuthFromRequest } from '../functions/api/Cookies/appCookie.js';
+import {findUserByEmail} from '../functions/api/models/user.model.js';
+import { connectDB } from '../functions/api/config/db.js';
 
 const Spinner = () => (
   <div className="flex justify-center items-center p-4">
@@ -51,7 +51,7 @@ export async function renderServerApp(url, lang = 'en',req) {
 await connectDB();
 let user =null;
 try {     const userId = getAuthFromRequest(req);
-  if(userId) { user = await User.findById(userId).select('-password'); console.log(user," is fetched"); }
+  if(userId) { user = await findUserByEmail(env, email); console.log(user," is fetched"); }//User.findById(userId).select('-password');
   else console.log("There is not a successful login.");
   
 } catch (err) { console.wan('Failed to fetch user : ', err.message); 
