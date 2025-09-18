@@ -3,10 +3,9 @@ compatibility_date = "2024-09-07"
 
 [build]
 command = "npm run build"
-# Publish is for Pages to serve static assets (dist folder)
 publish = "dist"
+pages_build_output_dir = "dist"
 
-# Specify functions directory for Worker backend
 [functions]
 directory = "functions"
 
